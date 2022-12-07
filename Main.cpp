@@ -59,7 +59,9 @@ int main(){
     Root->r = nuevoNodo("Febrero"); Root->r->r = nuevoNodo("Marzo");
     //Root->l->l = nuevoNodo("Abril"); Root->l->r = nuevoNodo("Mayo");
 
-    Root = RR(Root);
+    Root = RR(Root);//aqui me di cuenta que al hacer una rotacion cambia la raiz
+    //pero la idea sería crear una clase ArbolAVL para que se cambie internamente y no tener que andar 
+    //con returns 
 
     cout<<"Pre Order (RID): ";recorrerPreOrder(Root);cout<<endl;
     cout<<"In Order (IRD): ";recorrerInOrder(Root);cout<<endl;
