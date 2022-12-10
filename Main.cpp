@@ -7,7 +7,7 @@ using namespace std;
 
 
 
-
+/*
 int calcularPeso(string mes){
     int valor=0;
     char abecedario[27]= {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','\0'};
@@ -184,8 +184,8 @@ void insertar (Node **n, string mes)
     }
 
     int peso = calcularPeso(mes);
-    cout<<"Peso mes "<<(peso)<<endl;
-    cout<<"Peso nodo "<<(*n)->peso<<endl;
+    cout<<"Peso mes "<<(peso);
+    cout<<", Peso nodo "<<(*n)->peso<<endl;
 
     if(peso == (*n)->peso)
     {
@@ -211,10 +211,9 @@ void insertar (Node **n, string mes)
 }
 int main() {
     cout<<"Insercion Enero"<<endl;
-    cout<<endl;
     Node *r = new Node("enero");
+
     cout<<"Insercion Febrero"<<endl;
-    cout<<endl;
     insertar(&r, "febrero");
 
     cout<<"Insercion Marzo"<<endl;
@@ -251,10 +250,9 @@ int main() {
 
     return 0;
 }
+*/
 
 
-/*
- *
 
 struct Nodo{
     string mes;
@@ -280,52 +278,50 @@ int obtenerFactorBalance(Nodo* root);
 
 void recorrerPreOrder(Nodo* root); // RID
 
-void LL(Nodo* root);
-Nodo* RR(Nodo* root); 
-void LR(Nodo* root);
-void RL(Nodo* root);
+void LL(Nodo* *root);
+void RR(Nodo* *root); 
+void LR(Nodo* *root);
+void RL(Nodo* *root);
 
-void insertarAVL(Nodo* root, string mes);
+void insertarAVL(Nodo* *root, string mes, int peso);
 
 void recorrerInOrder(Nodo* root); // IRD
 void recorrerPostOrder(Nodo* root); // IDR
 
 int main(){
 
+    //Mostrar pesos de cada mes
+    cout<<"Pesos"<<endl;
     string meses[12]={"ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"};
     for(int i=0;12>i;i++){
         int x= calcularPeso(meses[i]);
         //crear nodo con estos datos
-        cout<<x<<endl;
+        cout<<meses[i]<<": "<<x<<endl;
     }
+    cout<<endl<<endl;
 
-    //Arbol de prueba para las funciones de recorrer
-    /* tree
-            En
-            /  \
-        Feb     Mar
-        /   \
-       Abr  May
-
-    struct Nodo* Root = nuevoNodo("Enero");
-    Root->r = nuevoNodo("Febrero"); Root->r->r = nuevoNodo("Marzo");
-    //Root->l->l = nuevoNodo("Abril"); Root->l->r = nuevoNodo("Mayo");
-
-    Root = RR(Root);//aqui me di cuenta que al hacer una rotacion cambia la raiz
-    //pero la idea sería crear una clase ArbolAVL para que se cambie internamente y no tener que andar 
-    //con returns 
-
-    cout<<"Pre Order (RID): ";recorrerPreOrder(Root);cout<<endl;
-    cout<<"In Order (IRD): ";recorrerInOrder(Root);cout<<endl;
-    cout<<"Post Order (IDR): ";recorrerPostOrder(Root);cout<<endl;
-
+    //Crear Raiz del Arbol
     Nodo* root = nuevoNodo("");
-    cout<<root->peso<<endl;
-    insertarAVL(root, "Enero");
-    cout<<root->peso<<endl;
-    insertarAVL(root, "Febrero");
-    //insertarAVL(root, "Marzo");
-    cout<<"Pre Order (RID): ";recorrerPreOrder(root);cout<<endl;
+
+    //Insertar
+    insertarAVL(&root, "Enero", 0);
+    insertarAVL(&root, "Febrero", 0);
+    insertarAVL(&root, "Marzo", 0);
+    insertarAVL(&root, "Abril", 0);
+    insertarAVL(&root, "Mayo", 0);
+    insertarAVL(&root, "Junio", 0);
+    insertarAVL(&root, "Julio", 0);
+    insertarAVL(&root, "Agosto", 0);
+    insertarAVL(&root, "Septiembre", 0);
+    insertarAVL(&root, "Octubre", 0);
+    insertarAVL(&root, "Noviembre", 0);
+    insertarAVL(&root, "Diciembre", 0);
+    
+    //Imprimir recorridos
+    cout<<"Pre Order (RID): ";recorrerPreOrder(root);cout<<endl<<endl;
+    cout<<"In Order (IRD): ";recorrerInOrder(root);cout<<endl<<endl;
+    cout<<"Post Order (IDR): ";recorrerPostOrder(root);cout<<endl<<endl;
+    
     return 0;
 };
 
@@ -364,65 +360,88 @@ int obtenerFactorBalance(Nodo* root){
     return obtenerAltura(root->l) - obtenerAltura(root->r);
 };
 
-void LL(Nodo* root){
-    Nodo* aux = root->l->r;
-    root->l->r = root;
-    root->l = aux;
+void LL(Nodo* *root){
+    Nodo* newRoot = (*root)->l;
+
+    Nodo* aux = (*root)->l->r;
+    (*root)->l->r = *root;
+    (*root)->l = aux;
+
+    *root = newRoot;//actualiza la raíz
 };
 
-Nodo* RR(Nodo* root){
-    Nodo* newRoot = root->r;
+void RR(Nodo* *root){
+    Nodo* newRoot = (*root)->r;
 
-    Nodo* aux = root->r->l;
-    root->r->l = root;
-    root->r = aux;
+    Nodo* aux = (*root)->r->l;
+    (*root)->r->l = *root;
+    (*root)->r = aux;
 
-    return newRoot;
+    *root = newRoot;//actualiza la raíz
 };
 
-void LR(Nodo* root){
-    RR(root->l);
+void LR(Nodo* *root){
+    RR( &( (*root)->l ) );
     LL(root);
 };
 
-void RL(Nodo* root){
-    LL(root->r);
+void RL(Nodo* *root){
+    LL( &( (*root)->r ) );
     RR(root);
 };
 
-void insertarAVL(Nodo* root, string mes){
+//root = raiz del arbol a insertar
+//mes = nombre del mes 
+//usar peso = 0 para calcularo segun calcularPeso(), sino especificar el peso
+void insertarAVL(Nodo* *root, string mes, int peso){
     Nodo* nodo = nuevoNodo(mes);
-    if(root->mes == "" || root->peso == 0){
-        *root = *nodo;
+    //si es el arbol está vacío
+    if((*root)->mes == "" || (*root)->peso == 0){
+        *(*root) = *nodo;
         return;
     }
-    if(root->peso > nodo->peso){
-        if(root->l){
-            insertarAVL(root->l, mes);
+
+    //si el peso no es el por defecto
+    if(peso != 0){
+        nodo->peso = peso;
+    }
+
+    //si el peso es igual a la raiz
+    if((*root)->peso == nodo->peso){
+        nodo->peso--;
+        peso = nodo->peso;
+    }
+
+    //si es el peso menor a la raíz
+    if((*root)->peso > nodo->peso){
+        if((*root)->l){
+            insertarAVL(&((*root)->l), mes, peso);
         }else{
-            root->l = nodo;
+            (*root)->l = nodo;
         }
     }
-    if(root->peso < nodo->peso){
-        if(root->r){
-            insertarAVL(root->r, mes);
+    //si es el peso mayor a la raíz
+    if((*root)->peso < nodo->peso){
+        if((*root)->r){
+            insertarAVL(&((*root)->r), mes, peso);
         }else{
-            root->r = nodo;
+            (*root)->r = nodo;
         }
     }
 
-    int FB = obtenerAltura(root->l) - obtenerAltura(root->r);
+    //Luego de añadir, balancear
+    int FB = obtenerAltura((*root)->l) - obtenerAltura((*root)->r);
 
-    if(FB > 1 && obtenerFactorBalance(root->l) == 1){
+    if(FB > 1 && obtenerFactorBalance((*root)->l) == 1){
         LL(root);
     }
-    if(FB > 1 && obtenerFactorBalance(root->l) == -1){
+    if(FB > 1 && obtenerFactorBalance((*root)->l) == -1){
         LR(root);
     }
-    if(FB < -1 && obtenerFactorBalance(root->r) == -1){
-        //root = RR(root);
+    if(FB < -1 && obtenerFactorBalance((*root)->r) == -1){
+        RR(root);
     }
-    if(FB < -1 && obtenerFactorBalance(root->r) == 1){
+    if(FB < -1 && obtenerFactorBalance((*root)->r) == 1){
         RL(root);
     }
 
@@ -462,4 +481,3 @@ void recorrerPostOrder(Nodo* root) {
     cout<<root->mes<<"(";
     cout<<root->peso<<") ";
 };
-*/
